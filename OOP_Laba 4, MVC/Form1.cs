@@ -1,12 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
+using System;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace OOP_Laba_4__MVC
@@ -46,11 +39,11 @@ namespace OOP_Laba_4__MVC
         {
             model.setValue_B(Decimal.ToInt32(numericUpDown2.Value));
         }
-
         private void numericUpDown3_ValueChanged(object sender, EventArgs e)
         {
             model.setValue_C(Decimal.ToInt32(numericUpDown3.Value));
         }
+
 
 
         private void trackBar1_Scroll(object sender, EventArgs e)
@@ -61,7 +54,6 @@ namespace OOP_Laba_4__MVC
         {
             model.setValue_B(Decimal.ToInt32(trackBar2.Value));
         }
-
         private void trackBar3_Scroll(object sender, EventArgs e)
         {
             model.setValue_C(Decimal.ToInt32(trackBar3.Value));
@@ -74,24 +66,30 @@ namespace OOP_Laba_4__MVC
             if (e.KeyCode == Keys.Enter)
                 model.setValue_A(Int32.Parse(textBox1.Text));
         }
-
         private void textBox2_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Enter)
                 model.setValue_B(Int32.Parse(textBox2.Text));
         }
-
         private void textBox3_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Enter)
                 model.setValue_C(Int32.Parse(textBox3.Text));
         }
 
-        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
+
+
+        private void Form1_FormClosing(object sender, FormClosingEventArgs e)//при закрытии формы
         {
             model.saveValues();
         }
+
+        private void Form1_Load(object sender, EventArgs e)//при открытии формы
+        {
+            model.getValues();
+        }
     }
+
     public class Model
     {
         private int A;
@@ -152,23 +150,26 @@ namespace OOP_Laba_4__MVC
             observers.Invoke(this, null);
         }
 
-        public int getValue_A()
+        public int getValue_A() {   return A;   }
+        public int getValue_B() {   return B;   }
+        public int getValue_C() {   return C;   }
+        public void saveValues()//сохраняем Values в файл
         {
-            return A;
-        }
+            StreamWriter save = new StreamWriter("Values.txt", false);
+            save.WriteLine(A);
+            save.WriteLine(B);
+            save.WriteLine(C);
+            save.Flush();
 
-        public int getValue_B()
-        {
-            return B;
         }
-
-        public int getValue_C()
+        public void getValues()//Читаем Values из файла
         {
-            return C;
-        }
-        public void saveValues()
-        {
-
+            StreamReader get = new StreamReader("Values.txt");
+            A = Int32.Parse(get.ReadLine());
+            B = Int32.Parse(get.ReadLine());
+            C = Int32.Parse(get.ReadLine());
+            observers.Invoke(this, null);
+            get.Close();
         }
 
     }
