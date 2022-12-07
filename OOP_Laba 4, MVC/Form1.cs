@@ -1,12 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace OOP_Laba_4__MVC
@@ -17,11 +10,15 @@ namespace OOP_Laba_4__MVC
         public Form1()
         {
             InitializeComponent();
+
             model = new Model();
             model.observers += new System.EventHandler(this.UpdateFromModel);
+            model.observers.Invoke(this, null);
         }
         private void UpdateFromModel(object sender, EventArgs e)
         {
+
+
             textBox1.Text = model.getValue_A().ToString();
             numericUpDown1.Value = model.getValue_A();
             trackBar1.Value = model.getValue_A();
@@ -30,9 +27,11 @@ namespace OOP_Laba_4__MVC
             numericUpDown2.Value = model.getValue_B();
             trackBar2.Value = model.getValue_B();
 
+
             textBox3.Text = model.getValue_C().ToString();
             numericUpDown3.Value = model.getValue_C();
             trackBar3.Value = model.getValue_C();
+
 
         }
 
@@ -46,11 +45,11 @@ namespace OOP_Laba_4__MVC
         {
             model.setValue_B(Decimal.ToInt32(numericUpDown2.Value));
         }
-
         private void numericUpDown3_ValueChanged(object sender, EventArgs e)
         {
             model.setValue_C(Decimal.ToInt32(numericUpDown3.Value));
         }
+
 
 
         private void trackBar1_Scroll(object sender, EventArgs e)
@@ -61,7 +60,6 @@ namespace OOP_Laba_4__MVC
         {
             model.setValue_B(Decimal.ToInt32(trackBar2.Value));
         }
-
         private void trackBar3_Scroll(object sender, EventArgs e)
         {
             model.setValue_C(Decimal.ToInt32(trackBar3.Value));
@@ -74,24 +72,25 @@ namespace OOP_Laba_4__MVC
             if (e.KeyCode == Keys.Enter)
                 model.setValue_A(Int32.Parse(textBox1.Text));
         }
-
         private void textBox2_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Enter)
                 model.setValue_B(Int32.Parse(textBox2.Text));
         }
-
         private void textBox3_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Enter)
                 model.setValue_C(Int32.Parse(textBox3.Text));
         }
 
-        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
+
+
+        private void Form1_FormClosing(object sender, FormClosingEventArgs e)//при закрытии формы
         {
             model.saveValues();
         }
     }
+
     public class Model
     {
         private int A;
@@ -99,77 +98,60 @@ namespace OOP_Laba_4__MVC
         private int C;
 
         public System.EventHandler observers;
-
+        public Model()
+        {
+            StreamReader get = new StreamReader("Values.txt");
+            A = Int32.Parse(get.ReadLine());
+            B = Int32.Parse(get.ReadLine());
+            C = Int32.Parse(get.ReadLine());
+            get.Close();
+        }
         public void setValue_A(int value)
         {
-            if(value > C)
-            {
-                int temp = C;
-                C = value;
-                A = temp;
-            }
+            A = value;
             if(value > B)
             {
-                A = value;
                 B = value;
+                if(value > C) 
+                    C = value;
             }
-            else
-            {
-                A = value;
-            }
-                
             observers.Invoke(this, null);
         }
 
         public void setValue_B(int value)
         {
-            if (A > B | B > C) 
-            {
-                MessageBox.Show("Введите 'B' правильно!");
+            if ((A > value) && (value < C))
                 B = A;
-            }
             else
-                B = value;
+            {
+                if (value > C)
+                    B = C;
+                if ((A <= value) && (value <= C))
+                    B = value;
+            }
             observers.Invoke(this, null);
         }
 
         public void setValue_C(int value)
         {
-            if (A > value)
-            {
-                A = C;
-                C = value;
-            }
-            if(value < B)
-            {
-                C = value;
+            C = value;
+            if (B > value)
                 B = value;
-            }
-            else
-            {
-                C = value;
-            }
+            if (A > B)
+                A = B;
             observers.Invoke(this, null);
         }
 
-        public int getValue_A()
+        public int getValue_A() {   return A;   }
+        public int getValue_B() {   return B;   }
+        public int getValue_C() {   return C;   }
+        public void saveValues()//сохраняем Values в файл
         {
-            return A;
+            StreamWriter save = new StreamWriter("Values.txt", false);
+            save.WriteLine(A);
+            save.WriteLine(B);
+            save.WriteLine(C);
+            save.Close();
         }
-
-        public int getValue_B()
-        {
-            return B;
-        }
-
-        public int getValue_C()
-        {
-            return C;
-        }
-        public void saveValues()
-        {
-
-        }
-
     }
 }
