@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Windows.Forms;
 
@@ -89,6 +89,11 @@ namespace OOP_Laba_4__MVC
         {
             model.saveValues();
         }
+
+        private void Form1_Load(object sender, EventArgs e)//при открытии формы
+        {
+            model.getValues();
+        }
     }
 
     public class Model
@@ -151,7 +156,17 @@ namespace OOP_Laba_4__MVC
             save.WriteLine(A);
             save.WriteLine(B);
             save.WriteLine(C);
-            save.Close();
+            save.Flush();
+
+        }
+        public void getValues()//Читаем Values из файла
+        {
+            StreamReader get = new StreamReader("Values.txt");
+            A = Int32.Parse(get.ReadLine());
+            B = Int32.Parse(get.ReadLine());
+            C = Int32.Parse(get.ReadLine());
+            observers.Invoke(this, null);
+            get.Close();
         }
     }
 }
